@@ -108,6 +108,13 @@ public:
 	size_t get_size() const noexcept;
 
 	/**
+	* @brief Поиск элемента в списке
+	* @param element Элемент для поиска
+	* @return true - есть в спике, false - нет в списке
+	*/
+	bool find(size_t element) const noexcept;
+
+	/**
 	* @brief Получение элемента находящегося на смещенни равном index от начала списка
 	* @param index Смещение относительно начала спика, на котором стоит искомый элемент
 	* @return Значение элемента, что находится на смещении index от начала
@@ -224,6 +231,21 @@ template<typename T>
 inline size_t DLList<T>::get_size() const noexcept
 {
 	return this->size;
+}
+
+template<typename T>
+inline bool DLList<T>::find(size_t element) const noexcept
+{
+	auto current = this->head;
+	while (current != nullptr)
+	{
+		if (current->value == element)
+		{
+			return true;
+		}
+		current = current->next;
+	}
+	return false;
 }
 
 template<typename T>
