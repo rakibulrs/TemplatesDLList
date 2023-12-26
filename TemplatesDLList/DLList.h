@@ -35,142 +35,152 @@ template<typename T>
 bool operator!=(const DLList<T>& rha, const DLList<T>& lha) noexcept;
 
 template<typename T>
-/*
+/**
 @brief Класс, описывающий линейный двусвязный список
 */
 class DLList
 {
 public:
-	/*
+	/**
 	* @brief  Создает пустой объект класса DLList
 	*/
 	DLList();
-	/*
+
+	/**
 	* @brief  Создает объект класса DLList по исходным данным
 	* @param list Элементы списка
 	*/
 	DLList(const std::initializer_list<T> list);
 
-	/*
+	/**
 	* @brief Деструктор класса, чистит память при удалении объекта
 	*/
 	~DLList();
 
-	/*
+	/**
 	* @brief Очистка списка
 	*/
 	void clean();
 
-	/*
+	/**
 	* @brief Добавления элемента в конец списка
 	* @param value Элемент для добавления
 	*/
 	void push_back(const T& value);
 
-	/*
+	/**
 	* @brief Добавления элемента в начало списка
 	* @param value Элемент для добавления
 	*/
 	void push_forward(const T& value);
 
-	/*
+	/**
 	* @brief Удаление элемента с конца списка
 	*/
 	void pop_back();
 
-	/*
+	/**
 	* @brief Удаление элемента с начала списка
 	*/
 	void pop_forward();
 
-	/*
+	/**
+	* @brief Получение элемента находящегося на смещенни равном index от начала списка
+	* @param index Смещение относительно начала спика, на котором стоит искомый элемент
+	* @return Значение элемента, что находится на смещении index от начала
+	*/
+	T get(size_t index);
+
+	/**
 	* @brief Проверяет наличие эелементов в списке
 	* @return true если есть, false если нет
 	*/
 	bool has_elements() const noexcept;
 
-	/*
+	/**
 	* @brief Проверяет отсутствие эелементов в списке
 	* @return true если есть, false если нет
 	*/
 	bool is_empty() const noexcept;
 
-	/*
+	/**
 	* @brief Функция для преобразования списка в строку
 	* @return Строка, построенная по списку
 	*/
 	std::string to_string() const noexcept;
+	
+	/**
+	* @brief Получение длины списка
+	* @return Длина списка
+	*/
+	size_t get_size() const;
 
-	/*
+	/**
 	* @brief Оператор копирования
 	* @param list Список для копирования
 	* @return Скопированный объект типа DLList
 	*/
 	DLList<T>& operator=(const DLList<T>& list);
 
-	/*
+	/**
 	* @brief Оператор перемещение
 	* @param list Список для перемещения
 	* @return Перемещенный объект типа DLList
 	*/
 	DLList<T>& operator=(DLList<T>&& list) noexcept;
 
-	/*
+	/**
 	* @brief Конструктор копирования
 	* @param list Список для копирования
 	*/
 	DLList(DLList<T>&& list);
-	/*
+
+	/**
 	* @brief Конструктор перемещения
 	* @param list Список для перемещения
 	*/
 	DLList(const DLList<T>& list);
 
 private:
+
+	template<typename T>
+	class Node
+	{
+	public:
+		/**
+		@brief  Инициализирует новый экземпляр класса Node
+		@param value Значение элемента
+		@param prev Предыдущий элемент
+		@param next Следующий элемент
+		*/
+		Node(T value)
+			:value(value), next(nullptr), prev(nullptr)
+		{
+		};
+
+		Node<T>* next;
+		Node<T>* prev;
+
+		T value;
+	};
+
+
 	Node<T>* head;
 	Node<T>* tail;
-
-
+	size_t size;
 };
 
-
-
-template<typename T>
-class Node
-{
-public:
-	/*
-	@brief  Инициализирует новый экземпляр класса Node
-	@param value Значение элемента
-	@param prev Предыдущий элемент
-	@param next Следующий элемент
-	*/
-	Node(T value);
-
-	Node<T>* next;
-	Node<T>* prev;
-
-	T value;
-};
-
-template<typename T>
-inline Node<T>::Node(T value)
-	:value(value), prev(nullptr), next(nullptr)
-{
-}
 
 template<typename T>
 inline DLList<T>::DLList()
-	: head(nullptr), tail(nullptr)
+	: head(nullptr), tail(nullptr), size(0)
 {
 }
-
-
 
 
 template<typename T>
 inline DLList<T>::DLList(const std::initializer_list<T> list)
-	: head(nullptr), tail(nullptr)
+	: head(nullptr), tail(nullptr), size(0)
 {
 	for (auto item : list)
 	{
@@ -209,6 +219,12 @@ inline std::string DLList<T>::to_string() const noexcept
 }
 
 template<typename T>
+inline size_t DLList<T>::get_size() const
+{
+	return this->size;
+}
+
+template<typename T>
 inline void DLList<T>::push_back(const T& value)
 {
 	Node<T>* ptr(new Node<T>(value));
@@ -222,6 +238,7 @@ inline void DLList<T>::push_back(const T& value)
 		this->head = ptr;
 	}
 	this->tail = ptr;
+	this->size++;
 }
 
 template<typename T>
@@ -240,6 +257,7 @@ inline void DLList<T>::push_forward(const T& value)
 		this->tail = ptr;
 		this->head = ptr;
 	}
+	this->size++;
 }
 
 template<typename T>
@@ -260,7 +278,7 @@ inline void DLList<T>::pop_back()
 			prev->next = nullptr;
 			this->tail = prev;
 		}
-
+		this->size--;
 	}
 }
 
@@ -282,7 +300,24 @@ inline void DLList<T>::pop_forward()
 			next->prev = nullptr;
 			this->head = next;
 		}
+		this->size--;
 	}
+}
+
+template<typename T>
+inline T DLList<T>::get(size_t index)
+{
+	if (this->is_empty() || (index + 1) > this->size) 
+	{
+		throw std::out_of_range("Incorrect index");
+	}
+
+	Node<T>* temp = this->head;
+	for (size_t i = 0; i < index; i++)
+	{
+		temp = head->next;
+	}
+	return temp->value;
 }
 
 template<typename T>
@@ -361,3 +396,5 @@ inline bool operator!=(const DLList<T>& rha, const DLList<T>& lha) noexcept
 {
 	return !(lha == rha);
 }
+
+
