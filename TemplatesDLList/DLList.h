@@ -370,11 +370,11 @@ inline DLList<T>::DLList(const DLList<T>& list)
 	: head{ nullptr }, tail{ nullptr }
 {
 	DLList temp;
-	auto curr = list.head;
-	while (curr != nullptr)
+	auto current = list.head;
+	while (current != nullptr)
 	{
-		temp.push_back(curr->value);
-		curr = curr->next;
+		temp.push_back(current->value);
+		current = current->next;
 	}
 	std::swap(this->head, temp.head);
 	std::swap(this->tail, temp.tail);
