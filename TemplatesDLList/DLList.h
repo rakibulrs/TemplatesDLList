@@ -108,6 +108,13 @@ public:
 	size_t get_size() const noexcept;
 
 	/**
+	* @brief Получение элемента находящегося на смещенни равном index от начала списка
+	* @param index Смещение относительно начала спика, на котором стоит искомый элемент
+	* @return Значение элемента, что находится на смещении index от начала
+	*/
+	T get(size_t index) const;
+
+	/**
 	* @brief Очистка списка
 	*/
 	void clean();
@@ -134,12 +141,7 @@ public:
 	*/
 	void pop_forward();
 
-	/**
-	* @brief Получение элемента находящегося на смещенни равном index от начала списка
-	* @param index Смещение относительно начала спика, на котором стоит искомый элемент
-	* @return Значение элемента, что находится на смещении index от начала
-	*/
-	T get(size_t index);
+	
 
 private:
 
@@ -305,7 +307,7 @@ inline void DLList<T>::pop_forward()
 }
 
 template<typename T>
-inline T DLList<T>::get(size_t index)
+inline T DLList<T>::get(size_t index) const
 {
 	if (this->is_empty() || (index + 1) > this->size) 
 	{
