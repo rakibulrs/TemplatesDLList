@@ -364,6 +364,7 @@ inline DLList<T>& DLList<T>::operator=(const DLList<T>& list)
 		DLList temp(list);
 		std::swap(this->head, temp.head);
 		std::swap(this->tail, temp.tail);
+		std::exchange(this->size, temp.size);
 	}
 	return *this;
 }
@@ -375,6 +376,7 @@ inline DLList<T>& DLList<T>::operator=(DLList<T>&& list) noexcept
 	{
 		std::swap(this->head, list.head);
 		std::swap(this->tail, list.tail);
+		std::exchange(this->size, list.size);
 	}
 	return *this;
 }
@@ -385,6 +387,7 @@ inline DLList<T>::DLList(DLList<T>&& list)
 {
 	std::swap(this->head, list.head);
 	std::swap(this->tail, list.tail);
+	std::exchange(this->size, list.size);
 }
 
 template<typename T>
