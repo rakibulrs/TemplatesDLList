@@ -6,9 +6,8 @@ int main()
 	try
 	{
 		DLList<int> a{ 1,2,3};
-		DLList<int> b{1,2,3,4};
-		std::cout << (a == b);
-		std::cout << (a == a);
+		DLList<int> b{ 2,2,2 };
+		b = std::move(a);
 	}
 	catch (const std::exception& e)
 	{

@@ -2,9 +2,6 @@
 #include <iostream>
 #include <sstream>
 
-template<typename T>
-class Node;
-
 template<typename T> class DLList;
 
 /**
@@ -112,7 +109,7 @@ public:
 	* @param element Элемент для поиска
 	* @return true - есть в спике, false - нет в списке
 	*/
-	bool find(size_t element) const noexcept;
+	bool find(const T& element) const noexcept;
 
 	/**
 	* @brief Получение элемента находящегося на смещенни равном index от начала списка
@@ -157,10 +154,8 @@ private:
 	{
 	public:
 		/**
-		@brief  Инициализирует новый экземпляр класса Node
-		@param value Значение элемента
-		@param previous Предыдущий элемент
-		@param next Следующий элемент
+		* @brief  Инициализирует новый экземпляр класса Node
+		* @param value Значение элемента
 		*/
 		explicit Node(const T& value) 
 			:value{ value }, next{ nullptr }, previous{ nullptr }
@@ -173,6 +168,12 @@ private:
 		T value;
 	};
 
+	/**
+	* @brief Премещение приватных полей текущего класса с внешним
+	* @param list Список для перемещения полей
+	*/
+	void swap(DLList<T>& list);
+
 	Node<T>* head;
 	Node<T>* tail;
 	size_t size;
@@ -181,13 +182,12 @@ private:
 template<typename T>
 inline DLList<T>::DLList()
 	: head{ nullptr }, tail{ nullptr }, size{ 0 }
-
 {
 }
 
 template<typename T>
 inline DLList<T>::DLList(const std::initializer_list<T> list)
-	: head{ nullptr }, tail{ nullptr }, size{ 0 }
+	: DLList()
 {
 	for (auto item : list)
 	{
@@ -234,7 +234,7 @@ inline size_t DLList<T>::get_size() const noexcept
 }
 
 template<typename T>
-inline bool DLList<T>::find(size_t element) const noexcept
+inline bool DLList<T>::find(const T& element) const noexcept
 {
 	auto current = this->head;
 	while (current != nullptr)
@@ -329,6 +329,14 @@ inline void DLList<T>::pop_forward()
 }
 
 template<typename T>
+inline void DLList<T>::swap(DLList<T>& list)
+{
+	std::swap(this->head, list.head);
+	std::swap(this->tail, list.tail);
+	std::exchange(this->size, list.size);
+}
+
+template<typename T>
 inline T DLList<T>::get(size_t index) const
 {
 	if (this->is_empty() || (index + 1) > this->size) 
@@ -339,7 +347,7 @@ inline T DLList<T>::get(size_t index) const
 	Node<T>* temp = this->head;
 	for (size_t i = 0; i < index; i++)
 	{
-		temp = head->next;
+		temp = temp->next;
 	}
 	return temp->value;
 }
@@ -362,9 +370,7 @@ inline DLList<T>& DLList<T>::operator=(const DLList<T>& list)
 	if (*this != list)
 	{
 		DLList temp(list);
-		std::swap(this->head, temp.head);
-		std::swap(this->tail, temp.tail);
-		std::exchange(this->size, temp.size);
+		this->swap(temp);
 	}
 	return *this;
 }
@@ -374,25 +380,21 @@ inline DLList<T>& DLList<T>::operator=(DLList<T>&& list) noexcept
 {
 	if (*this != list)
 	{
-		std::swap(this->head, list.head);
-		std::swap(this->tail, list.tail);
-		std::exchange(this->size, list.size);
+		this->swap(list);
 	}
 	return *this;
 }
 
 template<typename T>
 inline DLList<T>::DLList(DLList<T>&& list)
-	: head{ nullptr }, tail{ nullptr }
+	: DLList()
 {
-	std::swap(this->head, list.head);
-	std::swap(this->tail, list.tail);
-	std::exchange(this->size, list.size);
+	this->swap(list);
 }
 
 template<typename T>
 inline DLList<T>::DLList(const DLList<T>& list)
-	: head{ nullptr }, tail{ nullptr }
+	: DLList()
 {
 	DLList temp;
 	auto current = list.head;
@@ -401,8 +403,7 @@ inline DLList<T>::DLList(const DLList<T>& list)
 		temp.push_back(current->value);
 		current = current->next;
 	}
-	std::swap(this->head, temp.head);
-	std::swap(this->tail, temp.tail);
+	this->swap(temp);
 }
 
 template<typename T>
@@ -414,11 +415,7 @@ inline std::ostream& operator<<(std::ostream& os, const DLList<T>& list)
 template<typename T>
 inline bool operator==(const DLList<T>& rha, const DLList<T>& lha) noexcept
 {
-	if (&lha == &rha) 
-	{
-		return true;
-	}
-	return (lha.to_string() == rha.to_string());
+	return (&lha == &rha) || (lha.to_string() == rha.to_string());
 }
 
 template<typename T>
